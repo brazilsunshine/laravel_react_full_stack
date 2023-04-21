@@ -19,17 +19,18 @@ axiosClient.interceptors.request.use((config) => {
     return config;
 })
 
-axiosClient.interceptors.response.use((response) => { //onFulfilled when the promise is successful
+// here I'm telling axios to use the following interceptors AFTER making the request
+axiosClient.interceptors.response.use((response) => { // onFulfilled when the promise is successful
     console.log({ response });
 
     return response;
 
 }, (error) => { // onRejected when the promise is rejected
-    console.log({ error });
+    console.log('axios-client', error);
 
-    const {response} = error;
+    const { response } = error;
 
-    if (response.status === 401)
+    if (response.status === 401) // 401 unauthorized
     {
         localStorage.removeItem('ACCESS_TOKEN')
     }
