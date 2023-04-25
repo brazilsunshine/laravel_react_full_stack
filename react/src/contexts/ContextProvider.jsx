@@ -23,7 +23,8 @@ export const ContextProvider = ({children}) => {
     const [user, setUser] = useState({
         name: 'John Doe',
     });
-    const [token, _setToken] = useState(null);
+    const [token, _setToken] = useState(localStorage.getItem('ACCESS_TOKEN'));
+    // get the token from localStorage so the user will still be logged in after refresh the page
 
     const setToken = (token) => {
         _setToken(token)
