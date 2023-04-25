@@ -1,9 +1,10 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { Link, Navigate, Outlet } from "react-router-dom";
 import { useStateContext } from "../contexts/ContextProvider.jsx";
+import axiosClient from "../axios-client.js";
 
 export default function DefaultLayout () {
-    const { user, token } = useStateContext()
+    const { user, token, setUser, setToken } = useStateContext()
 
     // if there's no token the user is not authenticated and the user is trying to access a page
     // only for authenticated users
@@ -15,7 +16,38 @@ export default function DefaultLayout () {
     function onLogout (e)
     {
         e.preventDefault()
+
+        axiosClient.post('/logout')
+        .then(response => {
+            console.log('logout', response);
+
+            if (response.status === 200)
+            {
+                setUser({})
+                setToken(null)
+            }
+         })
+        .catch(error => {
+            console.log('logout', error);
+        });
     }
+
+    useEffect (() =>
+    {
+        axiosClient.get('/user')
+        .then(response => {
+            console.log('user', response);
+
+            if (response.status === 200)
+            {
+                setUser(response.data);
+            }
+
+         })
+        .catch(error => {
+            console.log('', error);
+        });
+    }, [])
 
     /**
      * JSX
