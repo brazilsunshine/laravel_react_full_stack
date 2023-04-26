@@ -11,7 +11,6 @@ const axiosClient = axios.create({
  */
 // here I'm telling axios to use the following interceptors BEFORE making the request
 axiosClient.interceptors.request.use((config) => {
-    console.log({ config });
 
     const token = localStorage.getItem('ACCESS_TOKEN') // get the token from localStorage
 
@@ -21,7 +20,6 @@ axiosClient.interceptors.request.use((config) => {
 
 // here I'm telling axios to use the following interceptors AFTER making the request
 axiosClient.interceptors.response.use((response) => { // onFulfilled when the promise is successful
-    console.log({ response });
 
     return response;
 
