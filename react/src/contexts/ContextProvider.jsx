@@ -9,8 +9,10 @@ import {createContext, useContext, useState} from "react";
 const StateContext = createContext({
     user: null,
     token: null,
+    notification: null,
     setUser: () => {}, // setUser to be a function
     setToken: () => {}, // setToken to be function
+    setNotification: () => {},
 });
 
 /**
@@ -22,6 +24,7 @@ const StateContext = createContext({
 export const ContextProvider = ({children}) => {
     const [user, setUser] = useState({});
     const [token, _setToken] = useState(localStorage.getItem('ACCESS_TOKEN'));
+    const [notification, _setNotification] = useState('');
     // get the token from localStorage so the user will still be logged in after refresh the page
 
     const setToken = (token) => {
@@ -40,6 +43,16 @@ export const ContextProvider = ({children}) => {
         }
     }
 
+
+    const setNotification = (message) => {
+        _setNotification(message); // this one will set the message
+
+        setTimeout(() => {
+            _setNotification('') // and after 5 seconds this one will reset the message
+        }, 5000)
+
+    }
+
     return (
         <StateContext.Provider
             value={{
@@ -47,6 +60,8 @@ export const ContextProvider = ({children}) => {
                 token,
                 setUser,
                 setToken,
+                notification,
+                setNotification
             }}
         >
             { children }

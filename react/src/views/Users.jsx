@@ -1,10 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import axiosClient from "../axios-client.js";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
+import { useStateContext } from "../contexts/ContextProvider.jsx";
 
 export default function Users () {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(false);
+    const { setNotification } = useStateContext();
 
     /**
      * Mount Hook
@@ -28,7 +30,11 @@ export default function Users () {
         axiosClient.delete(`/users/${user.id}`)
         .then(response => {
             console.log('onDelete', response);
-            // todo show notification
+
+            if (response.status === 204)
+            {
+                setNotification("User was successfully deleted!");
+            }
 
             getUsers()
          })
@@ -48,7 +54,7 @@ export default function Users () {
 
         axiosClient.get('/users')
         .then(response => {
-            console.log('users-test', response);
+            console.log('getUsers', response);
 
             setLoading(false)
 
@@ -58,7 +64,7 @@ export default function Users () {
             }
          })
         .catch(error => {
-            console.log('users', error);
+            console.log('getUsers', error);
 
             setLoading(false);
         });

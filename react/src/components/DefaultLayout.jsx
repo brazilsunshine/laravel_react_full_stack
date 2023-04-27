@@ -4,7 +4,7 @@ import { useStateContext } from "../contexts/ContextProvider.jsx";
 import axiosClient from "../axios-client.js";
 
 export default function DefaultLayout () {
-    const { user, token, setUser, setToken } = useStateContext()
+    const { user, token, notification, setUser, setToken } = useStateContext()
 
     // if there's no token the user is not authenticated and the user is trying to access a page
     // only for authenticated users
@@ -81,6 +81,12 @@ export default function DefaultLayout () {
                 <Outlet />
             </main>
             </div>
+
+            {notification &&
+                <div className="notification">
+                    {notification}
+                </div>
+            }
         </div>
     )
 }

@@ -1,12 +1,14 @@
 import React, {useEffect, useState} from 'react';
-import {useNavigate, useParams} from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axiosClient from "../axios-client.js";
+import { useStateContext } from "../contexts/ContextProvider.jsx";
 
 export default function UserForm () {
     const navigate = useNavigate();
-    const {id} = useParams(); // allows you to access and extract dynamic parameters from the URL of the current page or component
+    const { id } = useParams(); // allows you to access and extract dynamic parameters from the URL of the current page or component
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState(null);
+    const { setNotification } = useStateContext();
     const [user, setUser] = useState({
         id: null,
         name: '',
@@ -15,6 +17,9 @@ export default function UserForm () {
         password_confirmation: '',
     });
 
+    /**
+     * get User by id
+     */
     if (id)
     {
         useEffect(() => {
@@ -22,7 +27,7 @@ export default function UserForm () {
 
             axiosClient.get(`/users/${id}`)
             .then(response => {
-                console.log('user-form', response);
+                console.log('', response);
 
                 if (response.status === 200)
                 {
@@ -32,7 +37,7 @@ export default function UserForm () {
                 }
              })
             .catch(error => {
-                console.log('user-form', error);
+                console.log('', error);
 
                 setLoading(false)
             });
@@ -47,15 +52,15 @@ export default function UserForm () {
     const onSubmit = (e) => {
         e.preventDefault();
 
-        if (user.id)
+        if (user.id) // if the user exists update the existing one
         {
             axiosClient.put(`/users/${user.id}`, user)
             .then(response => {
                 console.log('onSubmit', response);
 
-                // todo show notification
                 if (response.status === 200)
                 {
+                    setNotification("User was successfully updated!");
                     navigate('/users')
                 }
             })
@@ -71,29 +76,29 @@ export default function UserForm () {
                 }
             });
         }
-        else
+        else // or else create a new one
         {
             axiosClient.post(`/users/`, user)
-                .then(response => {
-                    console.log('onSubmit', response);
+            .then(response => {
+                console.log('onSubmit', response);
 
-                    // todo show notification
-                    if (response.status === 201)
-                    {
-                        navigate('/users')
-                    }
-                })
-                .catch(error => {
-                    console.log('onSubmit', error);
+                if (response.status === 201)
+                {
+                    setNotification("User was successfully updated!");
+                    navigate('/users')
+                }
+            })
+            .catch(error => {
+                console.log('onSubmit', error);
 
-                    const response = error.response;
+                const response = error.response;
 
-                    if (response && response.status === 422)
-                    {
-                        //console.log(error.data.errors);
-                        setErrors(response.data.errors);
-                    }
-                });
+                if (response && response.status === 422)
+                {
+                    //console.log(error.data.errors);
+                    setErrors(response.data.errors);
+                }
+            });
         }
     }
 
@@ -124,13 +129,16 @@ export default function UserForm () {
 
                 {!loading &&
                     <form onSubmit={onSubmit}>
-                        <input value={user.name}
-                               onChange={e => setUser({...user, name: e.target.value})}
-                               placeholder="Name"
+                        <input
+                            value={user.name}
+                            onChange={e => setUser({...user, name: e.target.value})}
+                            placeholder="Name"
                         />
-                        <input value={user.email}
-                               onChange={e => setUser({...user, email: e.target.value})}
-                               placeholder="Email"
+                        <input
+                            type="email"
+                            value={user.email}
+                            onChange={e => setUser({...user, email: e.target.value})}
+                            placeholder="Email"
                         />
                         <input
                             type="password"
